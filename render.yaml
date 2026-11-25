@@ -1,0 +1,36 @@
+# Render Blueprint for the DataNest API (https://render.com/docs/blueprint-spec).
+# Secrets (sync: false) are entered in the Render dashboard, never committed.
+services:
+  - type: web
+    name: datanest-api
+    runtime: python
+    rootDir: backend
+    plan: free                      # the free plan sleeps after ~15 min idle: the first request afterwards takes ~30-60 s
+    buildCommand: pip install -r requirements.lock
+    # --proxy-headers makes rate limiting see each visitor's real IP instead of Render's proxy
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips='*'
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: ENV
+        value: production           # turns on startup safety checks, HSTS, and hides /docs
+      - key: AUTH_DISABLED
+        value: "false"              # the app refuses to start if this is true in production
+      - key: FIREBASE_PROJECT_ID
+        sync: false
+      - key: DATABASE_URL           # Supabase "Session pooler" connection string
+        sync: false
+      - key: CORS_ORIGINS           # your Vercel URL(s), https only, comma separated. No wildcards.
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-3.5-flash-lite
+      - key: GEMINI_FALLBACK_MODELS
+        value: gemini-3.1-flash-lite,gemini-3.5-flash,gemini-3.6-flash,gemini-3.7-flash
+      - key: MAX_UPLOAD_MB
+        value: "5"

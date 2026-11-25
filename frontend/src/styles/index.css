@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: 248 249 251;
+  --surface: 255 255 255;
+  --muted: 241 243 246;
+  --line: 226 230 236;
+  --ink: 17 24 39;
+  --soft: 107 114 128;
+  --brand: 79 70 229;
+  --brand-ink: 255 255 255;
+}
+.dark {
+  --bg: 12 14 19;
+  --surface: 20 23 30;
+  --muted: 30 34 43;
+  --line: 42 47 58;
+  --ink: 237 240 245;
+  --soft: 148 156 170;
+  --brand: 129 140 248;
+  --brand-ink: 12 14 19;
+}
+
+body { @apply bg-bg text-ink font-sans antialiased; }
+
+@layer components {
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-md px-3.5 py-2 text-sm font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-50 disabled:pointer-events-none; }
+  .btn-primary { @apply btn bg-brand text-brand-ink hover:opacity-90; }
+  .btn-ghost { @apply btn border border-line bg-surface hover:bg-muted; }
+  .card { @apply rounded-lg border border-line bg-surface; }
+}
+
+@media (max-width: 1023px) {
+  .btn { min-height: 2.75rem; }
+}
+@media (max-width: 639px) {
+  input:not([type='checkbox']):not([type='radio']), select, textarea { font-size: 16px; }
+}

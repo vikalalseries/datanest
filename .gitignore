@@ -1,0 +1,21 @@
+# secrets: real env files are never committed; the *.example files are
+.env
+.env.*
+!.env.example
+
+# python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# node / build output
+node_modules/
+dist/
+frontend/dist/
+.vite/
+
+# local junk
+*.log
+bench_*.png
+.DS_Store
