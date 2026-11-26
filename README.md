@@ -102,7 +102,37 @@ Order: Supabase → Firebase → Render (API) → Vercel (frontend) → connect 
 
 1. **Supabase**: run the four migrations (above).
 2. **Check your config**: `python scripts/check_env.py backend/.env` (lists what is unsafe for production).
-3. **Render** (API): New → Blueprint → select this repo (`render.yaml` is included). Fill the secrets it asks for: `FIREBASE_PROJECT_ID`, `DATABASE_URL`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `GEMINI_API_KEY`, and `CORS_ORIGINS` (your Vercel URL; you can set a placeholder and update it in step 5). Leave `AUTH_DISABLED=false`. The free plan sleeps after ~15 min idle; the first request afterwards takes 30-60 s.
+3. **Render** (API): New → **Web Service** → connect this repo, then use these settings:
+
+   | Setting | Value |
+   |---|---|
+   | Language | Python 3 |
+   | Branch | `main` |
+   | Region | The one closest to your Supabase database |
+   | Root Directory | `backend` |
+   | Build Command | `pip install -r requirements.lock` |
+   | Start Command | `uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips='*'` |
+   | Health Check Path | `/health` |
+
+   `--proxy-headers` lets rate limiting see each visitor's real IP instead of Render's proxy.
+
+   Add these environment variables (see [Configuration reference](#configuration-reference)):
+
+   | Variable | Value |
+   |---|---|
+   | `PYTHON_VERSION` | `3.13.5` (CI tests with Python 3.13) |
+   | `ENV` | `production` |
+   | `FIREBASE_PROJECT_ID` | Your Firebase project id |
+   | `DATABASE_URL` | Supabase **Session pooler** connection string |
+   | `CORS_ORIGINS` | Your Vercel URL, `https://` and no trailing slash (a placeholder is fine until step 5) |
+   | `SUPABASE_URL` | Your Supabase project URL |
+   | `SUPABASE_SERVICE_ROLE_KEY` | Your Supabase service role key |
+   | `GEMINI_API_KEY` | Your Gemini key |
+   | `GEMINI_MODEL` | `gemini-3.5-flash-lite` |
+   | `GEMINI_FALLBACK_MODELS` | `gemini-3.1-flash-lite,gemini-3.5-flash,gemini-3.6-flash,gemini-3.7-flash` |
+   | `MAX_UPLOAD_MB` | `5` |
+
+   Do not set `AUTH_DISABLED`. On the free plan the service sleeps after ~15 min idle; the first request afterwards takes 30-60 s.
 4. **Vercel** (frontend): import the repo, set **Root Directory** to `frontend`, and add the `VITE_FIREBASE_*` variables plus `VITE_API_BASE_URL` = your Render URL. Do not set `VITE_AUTH_DISABLED`.
 5. **Connect**: set Render's `CORS_ORIGINS` to the final Vercel URL (add your custom domain if any). In Firebase → Authentication → Settings → **Authorized domains**, add the Vercel domain.
 6. **Verify**: `python scripts/smoke_test.py https://YOUR-API.onrender.com --origin https://YOUR-APP.vercel.app` should pass every check (login required, docs hidden, headers, CORS, HTTPS/HSTS). Then sign in with Google in the browser and run through Smart Add once.
@@ -131,5 +161,5 @@ backend/tests/  unit, security and real-database suites
 frontend/src/   pages/  components/  services/ (API clients)  context/  hooks/  layouts/
 supabase/migrations/   0001-0004 (+ rollback/)
 scripts/        check_env.py  smoke_test.py  make_lock.py
-render.yaml     frontend/vercel.json     .github/workflows/ci.yml
+frontend/vercel.json     .github/workflows/ci.yml
 ```
