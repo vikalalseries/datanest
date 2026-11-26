@@ -127,6 +127,20 @@ describe('NotificationBell', () => {
     expect(screen.getByRole('button', { name: 'Notifications' })).toBeInTheDocument()
   })
 
+  it('welcomes each user until they dismiss the message', async () => {
+    const bellFor = (id) => render(<MemoryRouter><NotificationBell userId={id} refreshMs={10 ** 9} /></MemoryRouter>)
+    const first = bellFor('u1')
+    fireEvent.click(await screen.findByRole('button', { name: /Notifications, 1 new/ }))
+    expect(screen.getByRole('link', { name: /Welcome to DataNest/ })).toHaveAttribute('href', '/about')
+    fireEvent.click(screen.getByRole('button', { name: /Dismiss: Welcome/ }))
+    first.unmount()
+    const again = bellFor('u1')
+    expect(await screen.findByRole('button', { name: 'Notifications' })).toBeInTheDocument()
+    again.unmount()
+    bellFor('u2')
+    expect(await screen.findByRole('button', { name: /Notifications, 1 new/ })).toBeInTheDocument()
+  })
+
   it('does not break the app when notifications cannot be loaded', async () => {
     api.notes.mockRejectedValue(new Error('offline'))
     renderBell()

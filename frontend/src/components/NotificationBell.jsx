@@ -1,11 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { AlarmClock, Bell, CalendarClock, Hourglass } from 'lucide-react'
+import { AlarmClock, Bell, CalendarClock, Hourglass, PartyPopper } from 'lucide-react'
 import { getNotifications } from '../services/insights'
 
 const KEY = 'datanest-dismissed-notifications'
-const ICON = { overdue: AlarmClock, due_soon: CalendarClock, no_response: Hourglass }
+const ICON = { overdue: AlarmClock, due_soon: CalendarClock, no_response: Hourglass, welcome: PartyPopper }
 const TONE = { danger: 'text-red-600', warning: 'text-amber-600', info: 'text-soft' }
+
+// Shown to every user until they dismiss it. The id includes the user, so a second account on the same device gets its own.
+const welcomeFor = (userId) => ({
+  id: `welcome:${userId}`, kind: 'welcome', severity: 'info', to: '/about',
+  title: 'Welcome to DataNest!', detail: 'See what you can do here and how to get started.',
+})
 
 function loadDismissed() {
   try { return new Set(JSON.parse(localStorage.getItem(KEY) || '[]')) } catch { return new Set() }
@@ -14,8 +20,8 @@ function saveDismissed(set) {
   try { localStorage.setItem(KEY, JSON.stringify([...set].slice(-300))) } catch { /* per-device convenience only */ }
 }
 
-/** Computed alerts: deadlines, overdue items, applications with no reply. Dismissals are remembered on this device. */
-export default function NotificationBell({ refreshMs = 5 * 60 * 1000 }) {
+/** A welcome message, then computed alerts: deadlines, overdue items, applications with no reply. Dismissals are remembered on this device. */
+export default function NotificationBell({ userId, refreshMs = 5 * 60 * 1000 }) {
   const [items, setItems] = useState([])
   const [open, setOpen] = useState(false)
   const [dismissed, setDismissed] = useState(loadDismissed)
@@ -37,7 +43,8 @@ export default function NotificationBell({ refreshMs = 5 * 60 * 1000 }) {
     return () => { document.removeEventListener('mousedown', onDoc); document.removeEventListener('keydown', onKey) }
   }, [open])
 
-  const visible = items.filter((i) => !dismissed.has(i.id))
+  const all = userId ? [...items, welcomeFor(userId)] : items
+  const visible = all.filter((i) => !dismissed.has(i.id))
   const dismiss = (ids) => setDismissed((d) => { const n = new Set(d); ids.forEach((i) => n.add(i)); saveDismissed(n); return n })
 
   return (
@@ -60,9 +67,9 @@ export default function NotificationBell({ refreshMs = 5 * 60 * 1000 }) {
               return (
                 <li key={n.id} className="flex items-start gap-2 rounded-lg px-2 py-2 hover:bg-muted">
                   <Icon className={`mt-0.5 h-4 w-4 shrink-0 ${TONE[n.severity] || ''}`} />
-                  <Link to={`/sheets/${n.sheet_id}`} className="min-w-0 flex-1" onClick={() => setOpen(false)}>
+                  <Link to={n.to || `/sheets/${n.sheet_id}`} className="min-w-0 flex-1" onClick={() => setOpen(false)}>
                     <span className="block truncate text-sm">{n.title}</span>
-                    <span className="block truncate text-xs text-soft">{n.detail}</span>
+                    <span className={`block text-xs text-soft ${n.kind === 'welcome' ? '' : 'truncate'}`}>{n.detail}</span>
                   </Link>
                   <button className="text-xs text-soft hover:text-ink" aria-label={`Dismiss: ${n.title}`} onClick={() => dismiss([n.id])}>✕</button>
                 </li>

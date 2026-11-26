@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { Spinner } from '../components/Spinner'
 
@@ -18,6 +19,13 @@ export default function Profile() {
           <p className="truncate text-sm text-soft">{profile.email}</p>
           <p className="mt-1 text-xs text-soft">Member since {new Date(profile.created_at).toLocaleDateString()}</p>
         </div>
+      </div>
+      <div className="card mt-4 flex flex-wrap items-center justify-between gap-4 p-5">
+        <div className="min-w-0">
+          <p className="font-medium">About DataNest</p>
+          <p className="text-sm text-soft">What this website does, how it helps you, and how your data is used.</p>
+        </div>
+        <Link to="/about" className="btn-ghost">Learn more</Link>
       </div>
       <button className="btn-ghost mt-4" onClick={signOut}>Sign out</button>
     </div>

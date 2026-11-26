@@ -28,7 +28,7 @@ const TABS = [
 const TITLES = {
   '/dashboard': 'Dashboard', '/sheets': 'Sheets', '/records': 'All records', '/activity': 'Activity', '/assistant': 'Assistant',
   '/templates': 'Templates', '/import': 'Import', '/add': 'Add information', '/search': 'Search', '/trash': 'Trash',
-  '/settings': 'Settings', '/profile': 'Profile',
+  '/settings': 'Settings', '/profile': 'Profile', '/about': 'About DataNest',
 }
 
 const linkCls = ({ isActive }) =>
@@ -68,6 +68,7 @@ function AccountMenu({ name, avatar, onNavigate }) {
       {open && (
         <div role="menu" aria-label="Account" className="card absolute bottom-full left-0 right-0 mb-2 p-1">
           <Link role="menuitem" to="/profile" className={item} onClick={() => { setOpen(false); onNavigate() }}>Profile</Link>
+          <Link role="menuitem" to="/about" className={item} onClick={() => { setOpen(false); onNavigate() }}>About DataNest</Link>
           <button role="menuitem" className={`${item} flex items-center justify-between`} onClick={toggle}>
             <span>Dark theme</span><span className="text-xs text-soft">{dark ? 'On' : 'Off'}</span>
           </button>
@@ -165,7 +166,7 @@ export function AppLayout() {
             </form>
             <div className="flex items-center gap-2 lg:ml-auto">
               <button className="btn-ghost !h-11 !w-11 !px-0 lg:hidden" onClick={() => setSearchOpen((s) => !s)} aria-label="Search" aria-expanded={searchOpen}><Search className="h-5 w-5" /></button>
-              <NotificationBell />
+              <NotificationBell userId={profile?.id} />
             </div>
           </header>
           <main className="min-w-0 flex-1 p-4 pb-28 sm:p-6 sm:pb-28 lg:p-8"><Outlet /></main>

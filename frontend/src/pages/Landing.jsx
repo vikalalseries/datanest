@@ -21,7 +21,10 @@ export default function Landing() {
         <p className="mt-5 max-w-xl text-base text-soft sm:text-lg">
           DataNest uses AI to turn screenshots, links and plain sentences into structured records you can edit, search and export. No columns to design.
         </p>
-        <Link to={to} className="btn-primary mt-8 px-6 py-3 text-base">Get started</Link>
+        <div className="mt-8 flex flex-wrap gap-3">
+          <Link to={to} className="btn-primary px-6 py-3 text-base">Get started</Link>
+          <Link to="/about" className="btn-ghost px-6 py-3 text-base">About DataNest</Link>
+        </div>
       </section>
       <section className="mx-auto max-w-5xl px-4 pb-20">
         <h2 className="text-sm font-semibold text-soft">Three ways to add information</h2>

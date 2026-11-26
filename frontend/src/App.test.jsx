@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, it, expect, vi } from 'vitest'
 
@@ -20,6 +20,15 @@ describe('routing', () => {
   it('shows the landing page publicly', () => {
     renderAt('/')
     expect(screen.getByText(/Give it information/i)).toBeInTheDocument()
+  })
+
+  it('lets visitors open the About page from the landing page without signing in', async () => {
+    renderAt('/')
+    fireEvent.click(screen.getByRole('link', { name: 'About DataNest' }))
+    expect(await screen.findByRole('heading', { level: 1, name: 'About DataNest' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Sign in' })).toHaveAttribute('href', '/login')
+    expect(screen.getByRole('link', { name: 'Get started' })).toHaveAttribute('href', '/login')
+    expect(screen.queryByRole('link', { name: 'Sheets' })).toBeNull()
   })
 
   it('redirects protected routes to login when unauthenticated', () => {

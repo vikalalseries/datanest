@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { Spinner } from './components/Spinner'
 import { AppLayout } from './layouts/AppLayout'
+import { AboutLayout } from './layouts/AboutLayout'
 import Landing from './pages/Landing'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
@@ -20,6 +21,7 @@ const AssistantPage = lazy(() => import('./pages/AssistantPage'))
 const Templates = lazy(() => import('./pages/Templates'))
 const SearchPage = lazy(() => import('./pages/SearchPage'))
 const ActivityPage = lazy(() => import('./pages/ActivityPage'))
+const About = lazy(() => import('./pages/About'))
 
 export default function App() {
   return (
@@ -27,6 +29,9 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
+        <Route element={<AboutLayout />}>
+          <Route path="/about" element={<About />} />
+        </Route>
         <Route element={<ProtectedRoute />}>
           <Route element={<AppLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
