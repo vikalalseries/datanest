@@ -25,6 +25,11 @@
 
 body { @apply bg-bg text-ink font-sans antialiased; }
 
+/* Desktop uses a slightly compact scale (all rem sizes at 90%). Phones keep 100% for readable text and tap targets. */
+@media (min-width: 1024px) {
+  html { font-size: 90%; }
+}
+
 @layer components {
   .btn { @apply inline-flex items-center justify-center gap-2 rounded-md px-3.5 py-2 text-sm font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-50 disabled:pointer-events-none; }
   .btn-primary { @apply btn bg-brand text-brand-ink hover:opacity-90; }

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { Bot, CirclePlus, House, Menu, MoreHorizontal, Search, Table2, X } from 'lucide-react'
+import { Bot, ChevronRight, CirclePlus, House, Menu, MoreHorizontal, Search, Table2, X } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useTheme } from '../hooks/useTheme'
 import NotificationBell from '../components/NotificationBell'
@@ -32,7 +32,20 @@ const TITLES = {
 }
 
 const linkCls = ({ isActive }) =>
-  `block rounded-md px-3 py-2.5 text-base transition ${isActive ? 'bg-muted font-medium text-ink' : 'text-soft hover:bg-muted hover:text-ink'}`
+  `flex items-center justify-between rounded-md px-3 py-2.5 text-base transition ${isActive ? 'bg-muted font-medium text-ink' : 'text-soft hover:bg-muted hover:text-ink'}`
+
+function SideLink({ to, label }) {
+  return (
+    <NavLink to={to} className={linkCls}>
+      {({ isActive }) => (
+        <>
+          <span>{label}</span>
+          {isActive && <ChevronRight className="h-4 w-4 shrink-0" aria-hidden="true" />}
+        </>
+      )}
+    </NavLink>
+  )
+}
 
 function AccountMenu({ name, avatar, onNavigate }) {
   const [open, setOpen] = useState(false)
@@ -117,23 +130,29 @@ export function AppLayout() {
         {open && <div className="fixed inset-0 z-40 bg-black/40 lg:hidden" onClick={close} />}
         <aside
           aria-label="Main navigation"
-          className={`fixed inset-y-0 left-0 z-50 flex w-72 max-w-[85vw] flex-col overflow-y-auto border-r border-line bg-surface p-4 pt-[max(1rem,env(safe-area-inset-top))] transition-transform lg:sticky lg:top-0 lg:z-auto lg:h-screen lg:w-60 lg:max-w-none lg:shrink-0 lg:translate-x-0 lg:pt-4 ${
+          className={`fixed inset-y-0 left-0 z-50 flex w-72 max-w-[85vw] flex-col border-r border-line bg-surface p-4 pt-[max(1rem,env(safe-area-inset-top))] transition-transform lg:sticky lg:top-0 lg:z-auto lg:h-screen lg:w-60 lg:max-w-none lg:shrink-0 lg:translate-x-0 lg:pt-4 ${
             open ? 'translate-x-0' : '-translate-x-full'
           }`}
         >
-          <div className="mb-4 flex items-center justify-between px-1">
+          <div className="mb-4 flex shrink-0 items-center justify-between px-1">
             <span className="text-2xl font-bold tracking-tight">DataNest</span>
             <button className="grid h-11 w-11 place-items-center rounded-md hover:bg-muted lg:hidden" onClick={close} aria-label="Close menu"><X className="h-5 w-5" /></button>
           </div>
-          <Link to="/add" className="btn-primary w-full !py-2.5 !text-base" onClick={close}>Add information</Link>
-          <nav className="mt-3 flex-1" aria-label="Pages">
-            <ul className="space-y-1">
-              {ITEMS.map(({ to, label }) => <li key={to}><NavLink to={to} className={linkCls}>{label}</NavLink></li>)}
+          {/* Only this middle part scrolls on short screens, so the site name and account button stay visible */}
+          <div className="mb-3 flex min-h-0 flex-1 flex-col overflow-y-auto">
+            <Link to="/add" className="btn-primary w-full shrink-0 !py-2.5 !text-base" onClick={close}>
+              Add information
+              {path === '/add' && <ChevronRight className="h-4 w-4 shrink-0" aria-hidden="true" />}
+            </Link>
+            <nav className="mt-3 flex-1" aria-label="Pages">
+              <ul className="space-y-1">
+                {ITEMS.map((item) => <li key={item.to}><SideLink {...item} /></li>)}
+              </ul>
+            </nav>
+            <ul className="mt-4 space-y-1 border-t border-line pt-3">
+              {FOOTER.map((item) => <li key={item.to}><SideLink {...item} /></li>)}
             </ul>
-          </nav>
-          <ul className="mb-3 mt-4 space-y-1 border-t border-line pt-3">
-            {FOOTER.map(({ to, label }) => <li key={to}><NavLink to={to} className={linkCls}>{label}</NavLink></li>)}
-          </ul>
+          </div>
           <AccountMenu name={name} avatar={avatar} onNavigate={close} />
         </aside>
 
