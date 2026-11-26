@@ -5,7 +5,7 @@ import { getNotifications } from '../services/insights'
 
 const KEY = 'datanest-dismissed-notifications'
 const ICON = { overdue: AlarmClock, due_soon: CalendarClock, no_response: Hourglass, welcome: PartyPopper }
-const TONE = { danger: 'text-red-600', warning: 'text-amber-600', info: 'text-soft' }
+const TONE = { danger: 'text-red-600', warning: 'text-amber-600', info: 'text-soft', welcome: 'text-brand' }
 
 // Shown to every user until they dismiss it. The id includes the user, so a second account on the same device gets its own.
 const welcomeFor = (userId) => ({
@@ -50,8 +50,8 @@ export default function NotificationBell({ userId, refreshMs = 5 * 60 * 1000 }) 
   return (
     <div className="relative" ref={ref}>
       <button className="btn-ghost relative" onClick={() => { setOpen((o) => !o); if (!open) load() }} aria-label={`Notifications${visible.length ? `, ${visible.length} new` : ''}`} aria-expanded={open} aria-haspopup="true">
-        <Bell className="h-4 w-4" />
-        {visible.length > 0 && <span className="absolute -right-1 -top-1 grid h-4 min-w-[1rem] place-items-center rounded-full bg-red-600 px-1 text-[10px] font-semibold text-white">{visible.length > 9 ? '9+' : visible.length}</span>}
+        <Bell className="h-4 w-4 text-brand" />
+        {visible.length > 0 && <span className="absolute -right-1.5 -top-1.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-red-600 px-1 text-[11px] font-semibold leading-none tabular-nums text-white">{visible.length > 9 ? '9+' : visible.length}</span>}
       </button>
       {open && (
         <div role="region" aria-label="Notifications" className="card absolute right-0 z-30 mt-2 w-[min(24rem,92vw)] p-2">
@@ -66,7 +66,7 @@ export default function NotificationBell({ userId, refreshMs = 5 * 60 * 1000 }) 
               const Icon = ICON[n.kind] || Bell
               return (
                 <li key={n.id} className="flex items-start gap-2 rounded-lg px-2 py-2 hover:bg-muted">
-                  <Icon className={`mt-0.5 h-4 w-4 shrink-0 ${TONE[n.severity] || ''}`} />
+                  <Icon className={`mt-0.5 h-4 w-4 shrink-0 ${TONE[n.kind] || TONE[n.severity] || ''}`} />
                   <Link to={n.to || `/sheets/${n.sheet_id}`} className="min-w-0 flex-1" onClick={() => setOpen(false)}>
                     <span className="block truncate text-sm">{n.title}</span>
                     <span className={`block text-xs text-soft ${n.kind === 'welcome' ? '' : 'truncate'}`}>{n.detail}</span>

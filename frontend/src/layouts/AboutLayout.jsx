@@ -10,11 +10,11 @@ export function AboutLayout() {
   if (session) return <AppLayout />
   return (
     <div className="min-h-screen">
-      <header className="mx-auto flex max-w-3xl items-center justify-between px-4 py-5">
+      <header className="flex items-center justify-between px-4 py-5 sm:px-6 lg:px-8">
         <Link to="/" className="text-2xl font-bold tracking-tight">DataNest</Link>
         <Link to="/login" className="btn-ghost">Sign in</Link>
       </header>
-      <main className="mx-auto max-w-3xl px-4 pb-20"><Outlet /></main>
+      <main className="px-4 pb-20 sm:px-6 lg:px-8"><Outlet /></main>
     </div>
   )
 }

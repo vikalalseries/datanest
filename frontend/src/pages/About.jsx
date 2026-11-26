@@ -37,7 +37,7 @@ function Section({ title, children }) {
 export default function About() {
   const { session } = useAuth()
   return (
-    <div className="max-w-3xl">
+    <div className="w-full">
       {/* Inside the app, phones already show the title in the top bar */}
       <h1 className={`text-2xl font-semibold ${session ? 'max-lg:sr-only' : ''}`}>About DataNest</h1>
       <p className="mt-3 text-soft">
@@ -46,9 +46,9 @@ export default function About() {
       </p>
 
       <Section title="How it works">
-        <ol className="card mt-2 divide-y divide-line text-sm">
+        <ol className="mt-2 grid gap-3 text-sm md:grid-cols-3">
           {STEPS.map(([title, text], i) => (
-            <li key={title} className="flex gap-3 p-4">
+            <li key={title} className="card flex gap-3 p-4">
               <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-muted text-xs font-semibold" aria-hidden="true">{i + 1}</span>
               <div><p className="font-medium">{title}</p><p className="mt-0.5 text-soft">{text}</p></div>
             </li>
@@ -58,7 +58,7 @@ export default function About() {
       </Section>
 
       <Section title="How it helps you">
-        <div className="mt-2 grid gap-3 sm:grid-cols-2">
+        <div className="mt-2 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {USES.map(([title, text]) => (
             <div key={title} className="card p-4 text-sm"><h3 className="font-medium">{title}</h3><p className="mt-1 text-soft">{text}</p></div>
           ))}
@@ -66,9 +66,9 @@ export default function About() {
       </Section>
 
       <Section title="What you can do">
-        <ul className="card mt-2 divide-y divide-line text-sm">
+        <ul className="mt-2 grid gap-3 text-sm md:grid-cols-2">
           {FEATURES.map(([label, to, text]) => (
-            <li key={to} className="flex flex-col gap-0.5 p-4 sm:flex-row sm:gap-4">
+            <li key={to} className="card flex flex-col gap-0.5 p-4 sm:flex-row sm:gap-4">
               {session
                 ? <Link to={to} className="shrink-0 font-medium text-brand hover:underline sm:w-28">{label}</Link>
                 : <span className="shrink-0 font-medium sm:w-28">{label}</span>}
@@ -78,22 +78,24 @@ export default function About() {
         </ul>
       </Section>
 
-      <Section title="Your data and privacy">
-        <ul className="mt-2 list-disc space-y-1.5 pl-5 text-sm text-soft">
-          <li>You sign in with Google, and your sheets are visible only to your account.</li>
-          <li>To read your input and answer questions, DataNest sends the relevant content to Google's Gemini AI. Don't add passwords or other highly sensitive information.</li>
-          <li>Uploaded screenshots may be stored with your account.</li>
-          <li>You can export your data to Excel at any time.</li>
-        </ul>
-      </Section>
+      <div className="grid gap-x-8 md:grid-cols-2">
+        <Section title="Your data and privacy">
+          <ul className="mt-2 list-disc space-y-1.5 pl-5 text-sm text-soft">
+            <li>You sign in with Google, and your sheets are visible only to your account.</li>
+            <li>To read your input and answer questions, DataNest sends the relevant content to Google's Gemini AI. Don't add passwords or other highly sensitive information.</li>
+            <li>Uploaded screenshots may be stored with your account.</li>
+            <li>You can export your data to Excel at any time.</li>
+          </ul>
+        </Section>
 
-      <Section title="Good to know">
-        <ul className="mt-2 list-disc space-y-1.5 pl-5 text-sm text-soft">
-          <li>AI can make mistakes, so check the preview before saving.</li>
-          <li>The AI has usage limits and can be busy or slow. You can always keep working by hand.</li>
-          <li>Screenshots can be JPG, PNG or WEBP, up to 5 MB. Only public web pages can be read from a link.</li>
-        </ul>
-      </Section>
+        <Section title="Good to know">
+          <ul className="mt-2 list-disc space-y-1.5 pl-5 text-sm text-soft">
+            <li>AI can make mistakes, so check the preview before saving.</li>
+            <li>The AI has usage limits and can be busy or slow. You can always keep working by hand.</li>
+            <li>Screenshots can be JPG, PNG or WEBP, up to 5 MB. Only public web pages can be read from a link.</li>
+          </ul>
+        </Section>
+      </div>
     </div>
   )
 }
